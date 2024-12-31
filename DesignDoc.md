@@ -23,16 +23,11 @@ Autor : 造田 崇（[zoppa@ab.auone-net.jp](mail:zoppa@ab.auone-net.jp)）
 ### 概要
 `.NET 8`を使用した画面アプリケーションとする。  
 * 画面は`WinUI3`を使用する
-* 
-
-
-
-
-
-
-
-## ハイレベルアーキテクチャ
-
+* DIは`Microsoft.Extensions.DependencyInjection`を使用する
+* データベースはファイルDB`SQLite3`を使用する
+* データベースアクセスは`ZoppaDSqlMapper`を使用する
+### ハイレベルアーキテクチャ
+![svg1](./docres/svg1.svg)
 ## 内部実装について
 ## ストレージ
 ## 使用例
