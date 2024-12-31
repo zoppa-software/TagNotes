@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="TagNotes.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TagNotes"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" 
+    Title="TagNotes">
+
+    <NavigationView x:Name="NavView" 
+                    PaneDisplayMode="LeftCompact" 
+                    Loaded="NavView_Loaded" 
+                    SelectionChanged="NavView_SelectionChanged" 
+                    BackRequested="NavView_BackRequested"
+                    Background="#eef5f9"
+                    PaneTitle="メニュー"
+                    OpenPaneLength="180">
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Name="ListPageItem" Content="リスト" Tag="ListPage">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE70B;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Icon="Find" Content="検索" Tag="SearchPage" />
+            <NavigationViewItem Content="追加" Tag="AddPage">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE710;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+
+        <Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated"/>
+    </NavigationView>
+</Window>

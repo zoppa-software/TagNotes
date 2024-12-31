@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TagNotes (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "TagNotes (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
