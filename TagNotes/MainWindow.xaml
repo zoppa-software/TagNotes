@@ -9,28 +9,50 @@
     mc:Ignorable="d" 
     Title="TagNotes">
 
-    <NavigationView x:Name="NavView" 
-                    PaneDisplayMode="LeftCompact" 
-                    Loaded="NavView_Loaded" 
-                    SelectionChanged="NavView_SelectionChanged" 
-                    BackRequested="NavView_BackRequested"
-                    Background="#eef5f9"
-                    PaneTitle="メニュー"
-                    OpenPaneLength="180">
-        <NavigationView.MenuItems>
-            <NavigationViewItem x:Name="ListPageItem" Content="リスト" Tag="ListPage">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE70B;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Icon="Find" Content="検索" Tag="SearchPage" />
-            <NavigationViewItem Content="追加" Tag="AddPage">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE710;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-        </NavigationView.MenuItems>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <!-- タイトル -->
+        <Grid x:Name="AppTitleBar"
+              Background="#eef5f9">
+            <Image Source="Resources/icon.png"
+                   HorizontalAlignment="Left" 
+                   Width="16" Height="16" 
+                   Margin="8,0"/>
+            <TextBlock x:Name="AppTitleTextBlock" Text="TagNotes"
+                       TextWrapping="NoWrap"
+                       Style="{StaticResource CaptionTextBlockStyle}" 
+                       VerticalAlignment="Center"
+                       Margin="28,0,0,0"/>
+        </Grid>
 
-        <Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated"/>
-    </NavigationView>
+        <!-- ナビゲーションビュー。 -->
+        <NavigationView x:Name="NavView" 
+                        Grid.Row="1"
+                        PaneDisplayMode="LeftCompact" 
+                        Loaded="NavView_Loaded" 
+                        SelectionChanged="NavView_SelectionChanged" 
+                        BackRequested="NavView_BackRequested"
+                        Background="#eef5f9"
+                        PaneTitle="メニュー"
+                        OpenPaneLength="180">
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="ListPageItem" Content="リスト" Tag="ListPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE70B;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Icon="Find" Content="検索" Tag="SearchPage" />
+                <NavigationViewItem Content="追加" Tag="AddPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE710;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated"/>
+        </NavigationView>
+    </Grid>
 </Window>

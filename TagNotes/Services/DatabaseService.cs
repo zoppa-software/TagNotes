@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TagNotes.Helper;
-using Windows.UI.Notifications;
 using ZoppaDSql;
-using static TagNotes.Services.DatabaseService;
 
 namespace TagNotes.Services
 {

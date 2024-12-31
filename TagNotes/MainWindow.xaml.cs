@@ -38,6 +38,8 @@ namespace TagNotes
                 appWindow.SetIcon(@"app.ico");
             }
 
+            this.ExtendsContentIntoTitleBar = true;
+
             // サービスプロバイダを取得
             var provider = (Application.Current as App)?.Provider;
 
