@@ -9,8 +9,6 @@ using TagNotes.Helper;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
-using System.Reflection;
-using static TagNotes.Services.DatabaseService;
 
 namespace TagNotes.Models
 {

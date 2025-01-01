@@ -42,6 +42,7 @@ namespace TagNotes.Services
         private void Observe()
         {
             while (true) {
+                // 通知メッセージを取得
                 List<DatabaseService.Notification> messages = null;
                 try {
                     messages = this.dbService.GetNotificationMessages();
@@ -50,6 +51,7 @@ namespace TagNotes.Services
                     this.logger.LogError(ex, "通知メッセージの取得に失敗しました。");
                 }
 
+                // 通知メッセージを表示
                 foreach (var group in messages.Where(x => x.Timing <= DateTime.Now).GroupBy(x => x.Index)) {
                     var toastMsg = group.OrderByDescending(x => x.Timing).First();
                     try {
