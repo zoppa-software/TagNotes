@@ -7,7 +7,6 @@ using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Threading.Tasks;
 using TagNotes.Models;
-using TagNotes.Views;
 
 #nullable enable
 

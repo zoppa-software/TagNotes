@@ -1,12 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TagNotes.Views
+﻿namespace TagNotes.Views
 {
     /// <summary>検索の表示を行うビュー。</summary>
     internal sealed class SearchView(long indexNo, string command)

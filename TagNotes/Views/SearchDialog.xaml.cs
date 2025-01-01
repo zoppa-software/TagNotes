@@ -1,7 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using TagNotes.Models;
-using TagNotes.Views;
 
 #nullable enable
 
