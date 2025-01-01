@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using System;
 using System.Threading;
-using TagNotes.Helper;
 using TagNotes.Models;
 using TagNotes.Services;
 using ZoppaLoggingExtensions;

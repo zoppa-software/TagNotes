@@ -10,6 +10,9 @@ using System.Diagnostics;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 // https://learn.microsoft.com/ja-jp/windows/apps/windows-app-sdk/migrate-to-windows-app-sdk/guides/toast-notifications?tabs=appsdk
 
+// note: アプリ通知の処理については以下を参照
+// https://learn.microsoft.com/ja-jp/windows/apps/windows-app-sdk/migrate-to-windows-app-sdk/guides/toast-notifications?tabs=appsdk
+
 namespace TagNotes
 {
     /// <summary>

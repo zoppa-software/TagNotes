@@ -59,6 +59,19 @@ UIをXに近づけて、検索と通知機能を含めると新しいメモア�
 * データベースアクセスは`ZoppaDSqlMapper`を使用する
 
 ### 詳細 Detailed  
+#### 起動
+DIコンテナを使用してインスタンスを生成したいため、テンプレートの起動プロセスを変更して`Program`クラスにエントリポイント`Main`メソッドを作成した。  
+`Main`メソッドから以下の処理を行う。  
+1. サービスプロバイダ（`Microsoft.Extensions.DependencyInjection.ServiceProvider`）の作成
+1. 各サービスの初期化
+    1. データベースサービス（`DatabaseService`）の初期化
+    1. 通知メッセージサービス（`NotificationMessageService`）の初期化
+    1. 検索履歴サービス（`SearchHistoryService`）の初期化
+1. アプリケーション（`Application`）クラスからメインウィンドウ（`MainWindow`）の表示
+    1. アプリケーション（`Application`）クラスを生成
+    1. アプリケーション（`Application`）クラスの起動イベント発生（`OnLaunched`）
+    1. メインウィンドウ（`MainWindow`）クラスを生成、表示
+  
 #### 検索
 #### 編集
 #### 通知
