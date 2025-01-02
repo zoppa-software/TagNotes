@@ -6,46 +6,47 @@ using Microsoft.Windows.AppLifecycle;
 using Microsoft.UI.Dispatching;
 using System.Diagnostics;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-// https://learn.microsoft.com/ja-jp/windows/apps/windows-app-sdk/migrate-to-windows-app-sdk/guides/toast-notifications?tabs=appsdk
-
 // note: アプリ通知の処理については以下を参照
 // https://learn.microsoft.com/ja-jp/windows/apps/windows-app-sdk/migrate-to-windows-app-sdk/guides/toast-notifications?tabs=appsdk
 
 namespace TagNotes
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
+    /// <summary>プリケーションクラスです。</summary>
+    /// <remarks>
+    /// デフォルトのアプリケーションクラスを補完するために、アプリケーション固有の動作を提供します。
+    /// </remarks>
     public partial class App : Application
     {
+        /// <summary>サービスプロバイダーを取得します。</summary>
         internal ServiceProvider Provider { get; private set; }
 
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
+        /// <summary>コンストラクタ。</summary>
+        /// <remarks>
+        /// シングルトンアプリケーションオブジェクトを初期化します。
+        /// これは、作成されたコードの中で最初に実行される行であり、論理的には main() または WinMain() に相当します。
+        /// </remarks>
         public App(ServiceProvider provider)
         {
             this.InitializeComponent();
 
+            // サービスプロバイダーを設定します
             this.Provider = provider;
         }
 
-        /// <summary>
-        /// Invoked when the application is launched.
-        /// </summary>
-        /// <param name="args">Details about the launch request and process.</param>
+        /// <summary>アプリケーションが起動されたときに呼び出されます。</summary>
+        /// <param name="args">起動リクエストとプロセスの詳細。</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            //m_window.Activate();
+            // メインウィンドウを生成します
+            this.m_window = new MainWindow();
 
+            // 通知イベントを受信するようにアプリを登録します
             AppNotificationManager notificationManager = AppNotificationManager.Default;
             notificationManager.NotificationInvoked += NotificationManager_NotificationInvoked;
             notificationManager.Register();
 
+            // ウィンドウの起動/アクティブ化コードを専用の LaunchAndBringToForegroundIfNeeded ヘルパー メソッドにリファクタリングして、
+            // 複数の場所から呼び出すことができるようにします
             var activatedArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
             var activationKind = activatedArgs.Kind;
             if (activationKind != ExtendedActivationKind.AppNotification) {
@@ -56,60 +57,65 @@ namespace TagNotes
             }
         }
 
+        /// <summary>ウィンドウの起動/アクティブ化コードを実行します。</summary>
         private void LaunchAndBringToForegroundIfNeeded()
         {
             if (m_window == null) {
+                // ウィンドウがまだ作成されていない場合は、作成してアクティブ化します
                 m_window = new MainWindow();
                 m_window.Activate();
 
-                // Additionally we show using our helper, since if activated via a app notification, it doesn't
-                // activate the window correctly
+                // さらに、アプリの通知を通じてアクティベートされた場合、
+                // ウィンドウが正しくアクティベートされないため、ヘルパーを実行します。
                 WindowHelper.ShowWindow(m_window);
             }
             else {
+                // ウィンドウが既に作成されている場合は、前面に表示します
                 WindowHelper.ShowWindow(m_window);
             }
         }
 
-        private void NotificationManager_NotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
+        /// <summary>通知イベント処理ハンドラです。</summary>
+        /// <param name="sender">イベント発行元。</param>
+        /// <param name="args">イベントオブジェクト。</param>
+        private void NotificationManager_NotificationInvoked(AppNotificationManager sender, 
+                                                             AppNotificationActivatedEventArgs args)
         {
             HandleNotification(args);
         }
 
+        /// <summary>通知を処理します。</summary>
+        /// <param name="args">イベントオブジェクト。</param>
         private void HandleNotification(AppNotificationActivatedEventArgs args)
         {
-            // Use the dispatcher from the window if present, otherwise the app dispatcher
+            // ウィンドウにディスパッチャーが存在する場合はそれを使用し、
+            // そうでない場合はアプリのディスパッチャーを使用する。
             var dispatcherQueue = m_window?.DispatcherQueue ?? DispatcherQueue.GetForCurrentThread();
 
+            // ディスパッチャーに処理をキューイングします
+            dispatcherQueue.TryEnqueue(
+                delegate {
+                    switch (args.Arguments["action"]) {
+                        case "sendMessage":
+                            // バックグラウンドメッセージを送信する
+                            string message = args.UserInput["textBox"].ToString();
 
-            dispatcherQueue.TryEnqueue(delegate {
+                            // UIアプリが開いていない場合、完了したので閉じる
+                            if (m_window == null) {
+                                Process.GetCurrentProcess().Kill();
+                            }
+                            break;
 
-                switch (args.Arguments["action"]) {
-                    // Send a background message
-                    case "sendMessage":
-                        string message = args.UserInput["textBox"].ToString();
-                        // TODO: Send it
-
-                        // If the UI app isn't open
-                        if (m_window == null) {
-                            // Close since we're done
-                            Process.GetCurrentProcess().Kill();
-                        }
-
-                        break;
-
-                    // View a message
-                    case "viewMessage":
-
-                        // Launch/bring window to foreground
-                        LaunchAndBringToForegroundIfNeeded();
-
-                        // TODO: Open the message
-                        break;
+                        case "viewMessage":
+                            // 表示メッセージを送信する
+                            // ウィンドウを前面に表示/前面に持ってくる
+                            LaunchAndBringToForegroundIfNeeded();
+                            break;
                 }
             });
         }
 
+        /// <summary>メインウィンドウ。</summary>
         private Window m_window;
     }
 }
