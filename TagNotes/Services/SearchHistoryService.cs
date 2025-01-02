@@ -52,11 +52,12 @@ namespace TagNotes.Services
                 this.searchHistory.Rewrite(list.Select(v => new SearchView(v.IndexNo, v.Command)));
 
                 // 検索履歴の最大数を超えた場合は削除
-                while (this.searchHistory.Count > HISTORY_MAX) {
-                    var delhis = this.searchHistory[HISTORY_MAX];
+                var maxCount = HISTORY_MAX + this.searchHistory.Where(v => string.IsNullOrEmpty(v.Command)).Count();
+                while (this.searchHistory.Count > maxCount) {
+                    var delhis = this.searchHistory[maxCount];
                     this.logger.LogInformation("最大件数を超えた検索条件を削除します。{delhis.Command}", delhis.Command);
                     this.dbService.DeleteHistory(delhis.IndexNo);
-                    this.searchHistory.RemoveAt(HISTORY_MAX);
+                    this.searchHistory.RemoveAt(maxCount);
                 }
             }
             catch (Exception ex) {

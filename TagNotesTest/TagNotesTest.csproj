@@ -29,4 +29,14 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\db\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\db\search_test.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

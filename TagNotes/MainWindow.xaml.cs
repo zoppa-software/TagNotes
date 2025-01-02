@@ -113,6 +113,11 @@ namespace TagNotes
             }
             else if (args.SelectedItem is NavigationViewItem item) {
                 switch (item.Tag) {
+                    case "ListPage": {
+                            this.ChangeListPage();
+                        }
+                        break;
+
                     case "SearchPage": {
                             // 検索ページを表示し、リストを表示
                             if (this.NavView.DataContext is MainWindowModel model) {
