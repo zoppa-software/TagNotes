@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using System;
 using System.Threading;
+using TagNotes.Helper;
 using TagNotes.Models;
 using TagNotes.Services;
 using ZoppaLoggingExtensions;
@@ -21,9 +23,6 @@ namespace TagNotes
     /// <summary>エントリプログラム。</summary>
     internal static class Program
     {
-        /// <summary>アプリケーション。</summary>
-        private static App app;
-
         /// <summary>エントリポイント。</summary>
         /// <param name="args">引数。</param>
         [STAThread]
@@ -34,10 +33,15 @@ namespace TagNotes
 
             // サービスプロバイダの作成
             using var provider = CreateProvider();
+            if (WindowHelper.DecideRedirection()) {
+                var logger = provider.GetService<ILoggerFactory>().CreateLogger<ListPageModel>();
+                logger.LogInformation("redirected");
+                return;
+            }
 
             // データベースの初期化
             var db = provider.GetService<DatabaseService>();
-            db.Initialize();
+            db.Initialize().Wait();
 
             // 通知メッセージサービス起動
             var notif = provider.GetService<NotificationMessageService>();
@@ -51,7 +55,7 @@ namespace TagNotes
                 var context = new DispatcherQueueSynchronizationContext(
                     DispatcherQueue.GetForCurrentThread());
                 SynchronizationContext.SetSynchronizationContext(context);
-                app = new App(provider);
+                _ = new App(provider);
             });
 
             notif.FinishNotification();

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TagNotes.Helper;
 
-namespace TagNotesTest
+namespace TagNotesTest.Helper
 {
     public class ConditionAnalisysTest
     {

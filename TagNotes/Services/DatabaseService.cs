@@ -30,12 +30,12 @@ namespace TagNotes.Services
         }
 
         /// <summary>初期化を行います。</summary>
-        public void Initialize()
+        public async Task Initialize()
         {
             if (this.connection.IsNewDatabase()) {
                 this.logger.LogInformation("create new database");
 
-                Task.Run(() => {
+                await Task.Run(() => {
                     using var con = this.connection.GetDbConnection();
                     con.Open();
 

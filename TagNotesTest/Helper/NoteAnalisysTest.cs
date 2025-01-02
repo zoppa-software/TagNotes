@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using TagNotes.Helper;
 
-namespace TagNotesTest
+namespace TagNotesTest.Helper
 {
     public class NoteAnalisysTest
     {
         [Fact]
         public void Test1()
         {
-            var a =  
+            var a =
 @"#TAG1 は検索タグです。
 #TAG1 は複数定義できます。".ParseNote();
 
