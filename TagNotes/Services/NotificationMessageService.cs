@@ -61,15 +61,22 @@ namespace TagNotes.Services
                         ShowToast(toastMsg.Timing, toastMsg.Message, toastMsg.NotificationTime);
 
                         // 通知メッセージを削除
-                        this.dbService.DeleteNotificationMessage(group.ToList());
+                        switch(toastMsg.EveryDay) {
+                            case 1:
+                                this.dbService.UpdateNotificationMessage(toastMsg);
+                                break;
+                            default:
+                                this.dbService.DeleteNotificationMessage(group.ToList());
+                                break;
+                        }
                     }
                     catch (Exception ex) {
                         this.logger.LogError(ex, "通知メッセージの表示に失敗しました。");
                     }
                 }
 
-                // 30秒待機
-                for (int i = 0; i < 6; ++i) {
+                // 15秒待機
+                for (int i = 0; i < 3; ++i) {
                     Task.Delay(5 * 1000).Wait();
                     if (!this.observed) {
                         return;

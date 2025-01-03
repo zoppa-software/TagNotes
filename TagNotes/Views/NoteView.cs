@@ -14,8 +14,14 @@ namespace TagNotes.Views
     /// <param name="index">メモのインデックス。</param>
     /// <param name="information">メモの内容。</param>
     /// <param name="notificationTime">通知する日時。</param>
+    /// <param name="isEveryDay">毎日通知するかどうか。</param>
     /// <param name="updateTime">更新日時。</param>
-    internal sealed class NoteView(long index, string information, DateTime? notificationTime, DateTime updateTime, List<DatabaseService.Tag> tags)
+    internal sealed class NoteView(long index, 
+                                   string information, 
+                                   DateTime? notificationTime,
+                                   bool isEveryDay,
+                                   DateTime updateTime, 
+                                   List<DatabaseService.Tag> tags)
     {
         /// <summary>メモのインデックスを取得します。</summary>
         public long Index { get; } = index;
@@ -25,6 +31,9 @@ namespace TagNotes.Views
 
         /// <summary>通知する日時を取得します。</summary>
         public DateTime? NotificationTime { get; } = notificationTime;
+
+        /// <summary>通知する日時を取得します。</summary>
+        public bool IsEveryDay { get; } = isEveryDay;
 
         /// <summary>更新日時を取得します。</summary>
         public DateTime UpdateTime { get; } = updateTime;

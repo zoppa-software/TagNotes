@@ -55,7 +55,7 @@ namespace TagNotes.Models
 
                 // リストを更新
                 this.NoteList.Rewrite(
-                    list.Select(v => new NoteView(v.Index, v.Information, v.NotificationTime, v.UpdateTime, v.Tags))
+                    list.Select(v => new NoteView(v.Index, v.Information, v.NotificationTime, v.IsEveryDay, v.UpdateTime, v.Tags))
                 );
             }
             catch (Exception ex) {
@@ -90,6 +90,7 @@ namespace TagNotes.Models
                     IsNotification = (item.NotificationTime != null),
                     NotificationDate = new DateTimeOffset(nofTime.Date),
                     NotificationTime = nofTime.TimeOfDay,
+                    IsEveryDay = item.IsEveryDay,
                     UseDeleteButton = true
                 };
 
@@ -97,9 +98,16 @@ namespace TagNotes.Models
                 var result = await showDialogSync(data);
                 switch (result) {
                     case ContentDialogResult.Primary:
-                        this.logger.LogInformation("追加実行。id:{data.Id}, メモ:{data.Note}, 通知する:{data.IsNotification}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}",
-                            data.Id, data.Note, data.IsNotification, data.NotificationDate, data.NotificationTime);
-                        this.dbService.EditNote(data.Id, data.Note, data.IsNotification, data.NotificationDate, data.NotificationTime);
+                        this.logger.LogInformation("追加実行。id:{data.Id}, メモ:{data.Note}, 通知する:{data.IsNotification}, 毎日通知する:{data.IsEveryDay}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}",
+                            data.Id, data.Note, data.IsNotification, data.IsEveryDay, data.NotificationDate, data.NotificationTime);
+                        this.dbService.EditNote(
+                            data.Id, 
+                            data.Note, 
+                            data.IsNotification, 
+                            data.IsEveryDay, 
+                            data.NotificationDate, 
+                            data.NotificationTime
+                        );
                         await selectedPrimaryAction(data);
                         break;
 

@@ -44,6 +44,7 @@ namespace TagNotes.Services
     [ino] INTEGER,
     [information] TEXT NOT NULL,
     [notification] TIMESTAMP,
+    [every_day] INTEGER NOT NULL DEFAULT '0',
     [update_dt] TIMESTAMP NOT NULL,
     PRIMARY KEY([ino])
 );
@@ -74,9 +75,14 @@ CREATE TABLE [Condition] (
         /// <summary>メモを追加します。</summary>
         /// <param name="note">メモ。</param>
         /// <param name="isNotification">通知フラグ。</param>
+        /// <param name="isEveryDay">毎日通知フラグ。</param>
         /// <param name="notificationDate">通知日。</param>
         /// <param name="notificationTime">通知時刻。</param>
-        internal void AddNote(string note, bool isNotification, DateTimeOffset notificationDate, TimeSpan notificationTime)
+        internal void AddNote(string note, 
+                              bool isNotification,
+                              bool isEveryDay,
+                              DateTimeOffset notificationDate, 
+                              TimeSpan notificationTime)
         {
             // 現在日時を取得
             var now = DateTime.Now;
@@ -104,8 +110,26 @@ CREATE TABLE [Condition] (
 
             // 項目を追加する
             con.SetTransaction(tran).ExecuteQuery(
-                "insert into ShortItem(ino, information, notification, update_dt) values(@ino, @information, @notification, @update_dt)",
-                new { ino = newIndex, information = note, notification = (DateTime?)(isNotification ? notifTime : null), update_dt = now }
+@"insert into ShortItem(
+    ino, 
+    information, 
+    notification, 
+    every_day, 
+    update_dt
+) values(
+    @ino, 
+    @information, 
+    @notification, 
+    @every_day,
+    @update_dt
+)",
+                new { 
+                    ino = newIndex, 
+                    information = note, 
+                    notification = (DateTime?)(isNotification ? notifTime : null),
+                    every_day = (isEveryDay ? 1 : 0),
+                    update_dt = now 
+                }
             );
 
             // タグを追加する
@@ -119,19 +143,10 @@ CREATE TABLE [Condition] (
 
             // 通知日時を追加する
             if (isNotification) {
-                var param = new TimeSpan[] {
-                    TimeSpan.FromDays(3),
-                    TimeSpan.FromDays(1),
-                    TimeSpan.FromHours(4),
-                    TimeSpan.FromHours(1),
-                    TimeSpan.FromMinutes(30),
-                    TimeSpan.FromMinutes(15),
-                    TimeSpan.FromMinutes(5),
-                    TimeSpan.Zero
-                }
-                .Where(timing => now < notifTime.Subtract(timing))
-                .Select(timing => new { ino = newIndex, timing = notifTime.Subtract(timing) })
-                .ToArray();
+                var param = GetNotificationTime(notifTime, isEveryDay)
+                    .Where(timing => now < timing)
+                    .Select(tim => new { ino = newIndex, timing = tim })
+                    .ToArray();
 
                 if (param.Length != 0) {
                     con.SetTransaction(tran).ExecuteQuery(
@@ -147,9 +162,15 @@ CREATE TABLE [Condition] (
         /// <param name="index">メモ識別子。</param>
         /// <param name="note">メモ。</param>
         /// <param name="isNotification">通知フラグ。</param>
+        /// <param name="isEveryDay">毎日通知フラグ。</param>
         /// <param name="notificationDate">通知日。</param>
         /// <param name="notificationTime">通知時刻。</param>
-        internal void EditNote(long index, string note, bool isNotification, DateTimeOffset notificationDate, TimeSpan notificationTime)
+        internal void EditNote(long index, 
+                               string note, 
+                               bool isNotification, 
+                               bool isEveryDay, 
+                               DateTimeOffset notificationDate, 
+                               TimeSpan notificationTime)
         {
             // 現在日時を取得
             var now = DateTime.Now;
@@ -177,10 +198,17 @@ CREATE TABLE [Condition] (
 set
     information = @information,
     notification = @notification,
+    every_day = @every_day,
     update_dt = @update_dt
 where
     ino = @ino",
-                new { ino = index, information = note, notification = (DateTime?)(isNotification ? notifTime : null), update_dt = now }
+                new { 
+                    ino = index, 
+                    information = note, 
+                    notification = (DateTime?)(isNotification ? notifTime : null),
+                    every_day = (isEveryDay ? 1 : 0),
+                    update_dt = now
+                }
             );
 
             // タグを追加する
@@ -203,19 +231,10 @@ where
                 new { ino = index }
             );
             if (isNotification) {
-                var param = new TimeSpan[] {
-                    TimeSpan.FromDays(3),
-                    TimeSpan.FromDays(1),
-                    TimeSpan.FromHours(4),
-                    TimeSpan.FromHours(1),
-                    TimeSpan.FromMinutes(30),
-                    TimeSpan.FromMinutes(15),
-                    TimeSpan.FromMinutes(5),
-                    TimeSpan.Zero
-                }
-                .Where(timing => now < notifTime.Subtract(timing))
-                .Select(timing => new { ino = index, timing = notifTime.Subtract(timing) })
-                .ToArray();
+                var param = GetNotificationTime(notifTime, isEveryDay)
+                    .Where(timing => now < timing)
+                    .Select(tim => new { ino = index, timing = tim})
+                    .ToArray();
 
                 if (param.Length != 0) {
                     con.SetTransaction(tran).ExecuteQuery(
@@ -225,6 +244,39 @@ where
             }
 
             tran.Commit();
+        }
+
+        /// <summary>通知時間を取得します。</summary>
+        /// <param name="isEveryDay">毎日通知するならば真。</param>
+        /// <returns>通知時間リスト。</returns>
+        private static DateTime[] GetNotificationTime(DateTime notifTime, bool isEveryDay)
+        {
+            return (
+                isEveryDay ?
+                [
+                    AjustNextNotificationTime(notifTime.Subtract(TimeSpan.FromMinutes(5))),
+                    AjustNextNotificationTime(notifTime)
+                ] :
+                [
+                    notifTime.Subtract(TimeSpan.FromDays(3)),
+                    notifTime.Subtract(TimeSpan.FromDays(1)),
+                    notifTime.Subtract(TimeSpan.FromHours(4)),
+                    notifTime.Subtract(TimeSpan.FromHours(1)),
+                    notifTime.Subtract(TimeSpan.FromMinutes(30)),
+                    notifTime.Subtract(TimeSpan.FromMinutes(15)),
+                    notifTime.Subtract(TimeSpan.FromMinutes(5)),
+                    notifTime
+                ]
+            );
+        }
+
+        /// <summary>次の通知時間を取得します。</summary>
+        /// <param name="notif">通知時間。</param>
+        /// <returns>次の通知時間。</returns>
+        private static DateTime AjustNextNotificationTime(DateTime notif)
+        {
+            var res = DateTime.Now.Date.Add(notif.TimeOfDay);
+            return (res < DateTime.Now) ? res.AddDays(1) : res;
         }
 
         /// <summary>通知メッセージを取得します。</summary>
@@ -240,8 +292,9 @@ where
 @"select
     notif.ino, 
     notif.timing, 
+    sitm.every_day,
     sitm.information, 
-    sitm.notification 
+    sitm.notification
 from
     ShortNotification notif
 inner join ShortItem sitm on 
@@ -249,6 +302,30 @@ inner join ShortItem sitm on
 order by
     notif.timing,
     sitm.notification");
+        }
+
+        internal void UpdateNotificationMessage(Notification updateMsg)
+        {
+            // 接続を開く
+            using var con = this.connection.GetDbConnection();
+            con.Open();
+
+            // トランザクションの取得
+            using var tran = con.BeginTransaction();
+
+            // 通知メッセージを削除
+            con.SetTransaction(tran).ExecuteQuery(
+                "delete from ShortNotification where ino = @ino and timing = @timing",
+                new { ino = updateMsg.Index, timing = updateMsg.Timing }
+            );
+
+            // 通知メッセージを追加
+            con.SetTransaction(tran).ExecuteQuery(
+                "insert into ShortNotification (ino, timing) values(@ino, @timing)",
+                new { ino = updateMsg.Index, timing = updateMsg.Timing.AddDays(1) }
+            );
+
+            tran.Commit();
         }
 
         /// <summary>通知メッセージを削除します。</summary>
@@ -269,9 +346,10 @@ order by
         /// <summary>通知メッセージ。</summary>
         /// <param name="Index">メッセージID。</param>
         /// <param name="Timing">表示タイミング。</param>
+        /// <param name="EveryDay">毎日ならば真。</param>
         /// <param name="Message">メッセージ。</param>
         /// <param name="NotificationTime">通知時間。</param>
-        public record Notification(long Index, DateTime Timing, string Message, DateTime? NotificationTime);
+        public record Notification(long Index, DateTime Timing, long EveryDay, string Message, DateTime? NotificationTime);
 
         /// <summary>通知メッセージリストを取得します。</summary>
         /// <param name="searchWords">検索ワードリスト。</param>
@@ -308,6 +386,7 @@ select
     si.ino,
     si.information,
     si.notification,
+    si.every_day,
     si.update_dt,
     st.[no],
     st.tag
@@ -332,14 +411,14 @@ order by
                 [],
                 (param) => [param[0]],
                 (note, param) => {
-                    if (param[4] != null) {
-                        note.Tags.Add(new Tag((long)param[4], param[5].ToString()));
+                    if (param[5] != null) {
+                        note.Tags.Add(new Tag((long)param[5], param[5].ToString()));
                     }
                 },
                 (param) => {
-                    var note = new Note((long)param[0], param[1].ToString(), (DateTime?)param[2], (DateTime)param[3]);
-                    if (param[4] != null) {
-                        note.Tags.Add(new Tag((long)param[4], param[5].ToString()));
+                    var note = new Note((long)param[0], param[1].ToString(), (DateTime?)param[2], (param[3] != null && (long)param[3] != 0), (DateTime)param[4]);
+                    if (param[5] != null) {
+                        note.Tags.Add(new Tag((long)param[5], param[6].ToString()));
                     }
                     return note;
                 }
@@ -480,8 +559,9 @@ where
         /// <param name="index">メモインデックス。</param>
         /// <param name="information">メモ。</param>
         /// <param name="notificationTime">通知時刻。</param>
+        /// <param name="isEveryDay">毎日通知フラグ。</param>
         /// <param name="updateTime">更新日時・</param>
-        public sealed class Note(long index, string information, DateTime? notificationTime, DateTime updateTime)
+        public sealed class Note(long index, string information, DateTime? notificationTime, bool isEveryDay, DateTime updateTime)
         {
             /// <summary>メモインデックスを取得します。</summary>
             public long Index { get; } = index;
@@ -491,6 +571,9 @@ where
 
             /// <summary>通知時刻を取得します。</summary>
             public DateTime? NotificationTime { get; } = notificationTime;
+
+            /// <summary>毎日通知フラグを取得します。</summary>
+            public bool IsEveryDay { get; } = isEveryDay;
 
             /// <summary>更新日時を取得します。</summary>
             public DateTime UpdateTime { get; } = updateTime;

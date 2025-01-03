@@ -91,18 +91,20 @@ namespace TagNotes.Models
                     Note = string.Empty,
                     ActionCaption = caption,
                     NotificationDate = new DateTimeOffset(DateTime.Now.Date),
-                    NotificationTime = TimeSpan.Zero
+                    NotificationTime = TimeSpan.Zero,
+                    IsEveryDay = false
                 };
 
                 // メモの追加ダイアログを表示、操作を処理します
                 var result = await showDialogSync(data);
                 switch (result) {
                     case ContentDialogResult.Primary:
-                        this.logger.LogInformation("追加実行。メモ:{data.Note}, 通知する:{data.IsNotification}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}", 
-                            data.Note, data.IsNotification, data.NotificationDate, data.NotificationTime);
+                        this.logger.LogInformation("追加実行。メモ:{data.Note}, 通知する:{data.IsNotification}, 毎日通知する:{data.IsEveryDay}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}", 
+                            data.Note, data.IsNotification, data.IsEveryDay, data.NotificationDate, data.NotificationTime);
                         this.dbService.AddNote(
                             data.Note, 
                             data.IsNotification, 
+                            data.IsEveryDay,
                             data.NotificationDate, 
                             data.NotificationTime
                         );

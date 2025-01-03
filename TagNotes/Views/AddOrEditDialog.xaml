@@ -22,8 +22,8 @@
 
         <TextBox Grid.Row="1"
                  Text="{Binding Note, Mode=TwoWay}"
-                 Width="650"
-                 Height="120"
+                 Width="720"
+                 Height="160"
                  AcceptsReturn="True"
                  TextWrapping="Wrap" />
 
@@ -37,7 +37,7 @@
             <DatePicker Style="{StaticResource DatePickerStyle1}" 
                         SelectedDate="{Binding NotificationDate, Mode=TwoWay}"
                         SelectedDateChanged="DatePicker_SelectedDateChanged" />
-            
+
             <Button AutomationProperties.Name="Pie">
                 <FontIcon Glyph="&#xE787;" />
                 <Button.Flyout>
@@ -53,8 +53,13 @@
                 </Button.Flyout>
             </Button>
             <TimePicker Style="{StaticResource TimePickerStyle1}" 
+                        Margin="0,0,10,0"
                         ClockIdentifier="24HourClock" 
                         Time="{Binding NotificationTime, Mode=TwoWay}"/>
+
+            <CheckBox x:Uid="IsEveryChkText"
+                      IsChecked="{Binding IsEveryDay, Mode=TwoWay}"
+                      Content="毎日通知する" />
         </StackPanel>
     </Grid>
 </ContentDialog>

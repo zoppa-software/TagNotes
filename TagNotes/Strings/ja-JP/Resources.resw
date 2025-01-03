@@ -183,4 +183,7 @@
   <data name="AddOrEditDialog.SecondaryButtonText" xml:space="preserve">
     <value>削除</value>
   </data>
+  <data name="IsEveryChkText.Content" xml:space="preserve">
+    <value>毎日通知する</value>
+  </data>
 </root>

@@ -26,6 +26,10 @@ namespace TagNotes.Models
         [ObservableProperty]
         private bool isNotification;
 
+        /// <summary>毎日通知を行うスイッチ。</summary>
+        [ObservableProperty]
+        private bool isEveryDay;
+
         /// <summary>通知日時。</summary>
         [ObservableProperty]
         private DateTimeOffset notificationDate;

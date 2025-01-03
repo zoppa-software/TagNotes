@@ -95,24 +95,27 @@ namespace TagNotes
             // ディスパッチャーに処理をキューイングします
             dispatcherQueue.TryEnqueue(
                 delegate {
-                    switch (args.Arguments["action"]) {
-                        case "sendMessage":
-                            // バックグラウンドメッセージを送信する
-                            string message = args.UserInput["textBox"].ToString();
+                    if (args.Arguments.TryGetValue("action", out var action)) {
+                        switch (action) {
+                            case "sendMessage":
+                                // バックグラウンドメッセージを送信する
+                                string message = args.UserInput["textBox"].ToString();
 
-                            // UIアプリが開いていない場合、完了したので閉じる
-                            if (m_window == null) {
-                                Process.GetCurrentProcess().Kill();
-                            }
-                            break;
+                                // UIアプリが開いていない場合、完了したので閉じる
+                                if (m_window == null) {
+                                    Process.GetCurrentProcess().Kill();
+                                }
+                                break;
 
-                        case "viewMessage":
-                            // 表示メッセージを送信する
-                            // ウィンドウを前面に表示/前面に持ってくる
-                            LaunchAndBringToForegroundIfNeeded();
-                            break;
+                            case "viewMessage":
+                                // 表示メッセージを送信する
+                                // ウィンドウを前面に表示/前面に持ってくる
+                                LaunchAndBringToForegroundIfNeeded();
+                                break;
+                        }
+                    }
                 }
-            });
+            );
         }
 
         /// <summary>メインウィンドウ。</summary>
