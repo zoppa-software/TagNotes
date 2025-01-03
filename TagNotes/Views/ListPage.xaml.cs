@@ -7,6 +7,7 @@ using Microsoft.Windows.ApplicationModel.Resources;
 using System;
 using System.Threading.Tasks;
 using TagNotes.Models;
+using ZoppaLoggingExtensions;
 
 #nullable enable
 
@@ -30,7 +31,7 @@ namespace TagNotes.Views
             var provider = (Application.Current as App)?.Provider;
 
             // ログ設定
-            this.logger = provider?.GetService<ILoggerFactory>()?.CreateLogger<MainWindow>();
+            this.logger = provider?.GetService<ILoggerFactory>()?.CreateLogger<ListPage>();
 
             // ページモデルを設定
             this.DataContext = provider?.GetService<ListPageModel>();
@@ -43,12 +44,12 @@ namespace TagNotes.Views
         {
             try {
                 if (this.DataContext is ListPageModel model) {
-                    this.logger?.LogInformation("リストを再読込。条件:{searchCondition}", this.searchCondition);
+                    this.logger?.ZLog(this).LogInformation("リストを再読込。条件:{searchCondition}", this.searchCondition);
                     await model.LoadList(this.searchCondition, navigationMode);
                 }
             }
             catch (Exception ex) {
-                this.logger?.LogError(ex, "リスト再読込エラー:{ex.Message}", ex.Message);
+                this.logger?.ZLog(this).LogError(ex, "リスト再読込エラー:{ex.Message}", ex.Message);
             }
         }
 
@@ -59,12 +60,12 @@ namespace TagNotes.Views
             try {
                 if (this.DataContext is ListPageModel model) {
                     this.searchCondition = e.Parameter?.ToString() ?? "";
-                    this.logger?.LogInformation("リストを読込。条件:{searchCondition}", this.searchCondition);
+                    this.logger?.ZLog(this).LogInformation("リストを読込。条件:{searchCondition}", this.searchCondition);
                     await model.LoadList(this.searchCondition, e.NavigationMode);
                 }
             }
             catch (Exception ex) {
-                this.logger?.LogError(ex, "リスト読込エラー:{ex.Message}", ex.Message);
+                this.logger?.ZLog(this).LogError(ex, "リスト読込エラー:{ex.Message}", ex.Message);
             }
         }
 

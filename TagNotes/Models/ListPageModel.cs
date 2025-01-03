@@ -9,6 +9,7 @@ using TagNotes.Helper;
 using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Models
 {
@@ -43,15 +44,15 @@ namespace TagNotes.Models
             try {
                 // 検索履歴を更新
                 if (navigationMode == NavigationMode.Back) {
-                    this.logger.LogInformation("検索履歴を更新。{condition}", condition);
+                    this.logger.ZLog(this).LogInformation("検索履歴を更新。{condition}", condition);
                     await this.searchHistoryService.UpdateSearchHistory(condition);
                 }
 
                 // リストを読み込む
-                this.logger.LogInformation("リストを読み込みます。");
+                this.logger.ZLog(this).LogInformation("リストを読み込みます。");
                 var condItems = condition.ParseCondition();
                 var list = await this.dbService.GetNotesSync(condItems.SearchWords, condItems.SearchTags, condItems.NotSearchTags);
-                this.logger.LogInformation("リストの件数:{list.Count}", list.Count);
+                this.logger.ZLog(this).LogInformation("リストの件数:{list.Count}", list.Count);
 
                 // リストを更新
                 this.NoteList.Rewrite(
@@ -59,7 +60,7 @@ namespace TagNotes.Models
                 );
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "メモの取得に失敗しました。");
+                this.logger.ZLog(this).LogError(ex, "メモの取得に失敗しました。");
             }
         }
 
@@ -98,7 +99,7 @@ namespace TagNotes.Models
                 var result = await showDialogSync(data);
                 switch (result) {
                     case ContentDialogResult.Primary:
-                        this.logger.LogInformation("追加実行。id:{data.Id}, メモ:{data.Note}, 通知する:{data.IsNotification}, 毎日通知する:{data.IsEveryDay}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}",
+                        this.logger.ZLog(this).LogInformation("追加実行。id:{data.Id}, メモ:{data.Note}, 通知する:{data.IsNotification}, 毎日通知する:{data.IsEveryDay}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}",
                             data.Id, data.Note, data.IsNotification, data.IsEveryDay, data.NotificationDate, data.NotificationTime);
                         this.dbService.EditNote(
                             data.Id, 
@@ -112,7 +113,7 @@ namespace TagNotes.Models
                         break;
 
                     case ContentDialogResult.Secondary:
-                        this.logger.LogInformation("削除実行。id:{data.Id}", data.Id);
+                        this.logger.ZLog(this).LogInformation("削除実行。id:{data.Id}", data.Id);
                         this.dbService.DeleteNote(data.Id);
                         await selectedSecondaryAction(data);
                         break;
@@ -123,7 +124,7 @@ namespace TagNotes.Models
                 }
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "メモの編集に失敗しました。{ex.Message}", ex.Message);
+                this.logger.ZLog(this).LogError(ex, "メモの編集に失敗しました。{ex.Message}", ex.Message);
             }
         }
     }

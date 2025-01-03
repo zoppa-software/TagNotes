@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Services
 {
@@ -31,7 +32,7 @@ namespace TagNotes.Services
             this.dbService = dbService;
 
             // 通知メッセージの監視を開始
-            this.logger.LogInformation("create notification message service");
+            this.logger.ZLog(this).LogInformation("create notification message service");
             Task.Run(() => {
                 this.observed = true;
                 this.Observe();
@@ -48,14 +49,14 @@ namespace TagNotes.Services
                     messages = this.dbService.GetNotificationMessages();
                 }
                 catch (Exception ex) {
-                    this.logger.LogError(ex, "通知メッセージの取得に失敗しました。");
+                    this.logger.ZLog(this).LogError(ex, "通知メッセージの取得に失敗しました。");
                 }
 
                 // 通知メッセージを表示
                 foreach (var group in messages.Where(x => x.Timing <= DateTime.Now).GroupBy(x => x.Index)) {
                     var toastMsg = group.OrderByDescending(x => x.Timing).First();
                     try {
-                        this.logger.LogInformation("show notification message : {toastMsg.message}", toastMsg.Message);
+                        this.logger.ZLog(this).LogInformation("show notification message : {toastMsg.message}", toastMsg.Message);
 
                         // 通知メッセージを表示
                         ShowToast(toastMsg.Timing, toastMsg.Message, toastMsg.NotificationTime);
@@ -71,7 +72,7 @@ namespace TagNotes.Services
                         }
                     }
                     catch (Exception ex) {
-                        this.logger.LogError(ex, "通知メッセージの表示に失敗しました。");
+                        this.logger.ZLog(this).LogError(ex, "通知メッセージの表示に失敗しました。");
                     }
                 }
 

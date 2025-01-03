@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
 using TagNotes.Services;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Models
 {
@@ -55,19 +56,19 @@ namespace TagNotes.Models
                 var result = await showDialogSync(data);
                 switch (result) {
                     case ContentDialogResult.Primary:
-                        this.logger.LogInformation("検索実行。条件:{data.SearchCondition}", data.SearchCondition);
+                        this.logger.ZLog(this).LogInformation("検索実行。条件:{data.SearchCondition}", data.SearchCondition);
                         await this.searchHistoryService.UpdateSearchHistory(data.SearchCondition);
                         selectedPrimaryAction(data);
                         break;
 
                     default:
-                        this.logger.LogInformation("検索キャンセル");
+                        this.logger.ZLog(this).LogInformation("検索キャンセル");
                         selectedOtherAction();
                         break;
                 }
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "メモの検索に失敗しました。");
+                this.logger.ZLog(this).LogError(ex, "メモの検索に失敗しました。");
             }
         }
 
@@ -99,7 +100,7 @@ namespace TagNotes.Models
                 var result = await showDialogSync(data);
                 switch (result) {
                     case ContentDialogResult.Primary:
-                        this.logger.LogInformation("追加実行。メモ:{data.Note}, 通知する:{data.IsNotification}, 毎日通知する:{data.IsEveryDay}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}", 
+                        this.logger.ZLog(this).LogInformation("追加実行。メモ:{data.Note}, 通知する:{data.IsNotification}, 毎日通知する:{data.IsEveryDay}, 通知日:{data.NotificationDate}, 通知時刻:{data.NotificationTime}", 
                             data.Note, data.IsNotification, data.IsEveryDay, data.NotificationDate, data.NotificationTime);
                         this.dbService.AddNote(
                             data.Note, 
@@ -112,13 +113,13 @@ namespace TagNotes.Models
                         break;
 
                     default:
-                        this.logger.LogInformation("追加キャンセル");
+                        this.logger.ZLog(this).LogInformation("追加キャンセル");
                         selectedOtherAction();
                         break;
                 }
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "メモの追加に失敗しました。");
+                this.logger.ZLog(this).LogError(ex, "メモの追加に失敗しました。");
             }
         }
     }

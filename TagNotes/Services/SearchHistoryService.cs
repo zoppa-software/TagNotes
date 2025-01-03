@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TagNotes.Helper;
 using TagNotes.Views;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Services
 {
@@ -44,9 +45,9 @@ namespace TagNotes.Services
         {
             try {
                 // 検索履歴を読み込む
-                this.logger.LogInformation("検索履歴を読み込みます。");
+                this.logger.ZLog(this).LogInformation("検索履歴を読み込みます。");
                 var list = this.dbService.GetHistories();
-                this.logger.LogInformation("履歴の件数:{list.Count}", list.Count);
+                this.logger.ZLog(this).LogInformation("履歴の件数:{list.Count}", list.Count);
 
                 // 検索履歴を更新
                 this.searchHistory.Rewrite(list.Select(v => new SearchView(v.IndexNo, v.Command)));
@@ -55,13 +56,13 @@ namespace TagNotes.Services
                 var maxCount = HISTORY_MAX + this.searchHistory.Where(v => string.IsNullOrEmpty(v.Command)).Count();
                 while (this.searchHistory.Count > maxCount) {
                     var delhis = this.searchHistory[maxCount];
-                    this.logger.LogInformation("最大件数を超えた検索条件を削除します。{delhis.Command}", delhis.Command);
+                    this.logger.ZLog(this).LogInformation("最大件数を超えた検索条件を削除します。{delhis.Command}", delhis.Command);
                     this.dbService.DeleteHistory(delhis.IndexNo);
                     this.searchHistory.RemoveAt(maxCount);
                 }
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "検索履歴の取得に失敗しました。");
+                this.logger.ZLog(this).LogError(ex, "検索履歴の取得に失敗しました。");
             }
         }
 

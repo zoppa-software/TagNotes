@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TagNotes.Helper;
 using ZoppaDSql;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Services
 {
@@ -23,7 +24,7 @@ namespace TagNotes.Services
         public DatabaseService(ILoggerFactory loggerFactory, IDatabaseConnectionService connection)
         {
             this.logger = loggerFactory.CreateLogger<DatabaseService>();
-            this.logger.LogInformation("create database connection");
+            this.logger.ZLog(this).LogInformation("create database connection");
             this.connection = connection;
 
             loggerFactory.SetZoppaDSqlLogFactory();
@@ -33,7 +34,7 @@ namespace TagNotes.Services
         public async Task Initialize()
         {
             if (this.connection.IsNewDatabase()) {
-                this.logger.LogInformation("create new database");
+                this.logger.ZLog(this).LogInformation("create new database");
 
                 await Task.Run(() => {
                     using var con = this.connection.GetDbConnection();
@@ -68,7 +69,7 @@ CREATE TABLE [Condition] (
                 });
             }
             else {
-                this.logger.LogInformation("created database");
+                this.logger.ZLog(this).LogInformation("created database");
             }
         }
 
@@ -106,7 +107,7 @@ CREATE TABLE [Condition] (
 
             // 最大のインデックスNoを取得
             long newIndex = con.SetTransaction(tran).ExecuteDatas<long>("select max(ck.ino) as ino from ShortItem ck").First() + 1;
-            this.logger.LogInformation("新しい項目index:{newIndex}", newIndex);
+            this.logger.ZLog(this).LogInformation("新しい項目index:{newIndex}", newIndex);
 
             // 項目を追加する
             con.SetTransaction(tran).ExecuteQuery(

@@ -13,6 +13,7 @@ using TagNotes.Views;
 using Windows.ApplicationModel.Resources;
 using Windows.Graphics;
 using WinRT.Interop;
+using ZoppaLoggingExtensions;
 
 #nullable enable
 
@@ -77,7 +78,7 @@ namespace TagNotes
                 }
             }
             catch (Exception ex) {
-                this.logger?.LogError(ex, "ウィンドウのロードに失敗しました。");
+                this.logger?.ZLog(this).LogError(ex, "ウィンドウのロードに失敗しました。");
             }
         }
 

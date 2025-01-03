@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SQLite;
 using TagNotes.Helper;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Services
 {
@@ -27,7 +28,7 @@ namespace TagNotes.Services
         {
             // ロガーを作成
             this.logger = loggerFactory.CreateLogger<DatabaseConnectionService>();
-            this.logger.LogInformation("create database connection");
+            this.logger.ZLog(this).LogInformation("create database connection");
 
             // データベースフォルダが存在しない場合は作成
             var dbFolder = new System.IO.DirectoryInfo(DatabaseFolderPath);
@@ -40,13 +41,13 @@ namespace TagNotes.Services
                 DataSource = $"{DatabaseFolderPath}\\{FILE_NAME}"
             };
             this.connectionString = conBuilder.ConnectionString;
-            this.logger.LogInformation("connection string : {connectionString}", this.connectionString);
+            this.logger.ZLog(this).LogInformation("connection string : {connectionString}", this.connectionString);
         }
 
         /// <summary>データベース接続を取得します。</summary>
         public IDbConnection GetDbConnection()
         {
-            this.logger.LogInformation("open connection");
+            this.logger.ZLog(this).LogInformation("open connection");
             return new SQLiteConnection(this.connectionString);
         }
 

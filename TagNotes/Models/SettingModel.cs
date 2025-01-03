@@ -4,6 +4,7 @@ using System;
 using System.Windows.Input;
 using TagNotes.Helper;
 using TagNotes.Services;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Models
 {
@@ -24,7 +25,7 @@ namespace TagNotes.Models
                 System.Diagnostics.Process.Start("explorer.exe", LogFolderPath);
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "ログフォルダを開けませんでした。");
+                this.logger.ZLog(this).LogError(ex, "ログフォルダを開けませんでした。");
             }
         });
 
@@ -34,7 +35,7 @@ namespace TagNotes.Models
                 System.Diagnostics.Process.Start("explorer.exe", DatabaseConnectionService.DatabaseFolderPath);
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "データベースフォルダを開けませんでした。");
+                this.logger.ZLog(this).LogError(ex, "データベースフォルダを開けませんでした。");
             }
         });
     }

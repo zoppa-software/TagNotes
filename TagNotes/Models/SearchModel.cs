@@ -6,6 +6,7 @@ using System.Linq;
 using TagNotes.Helper;
 using TagNotes.Services;
 using TagNotes.Views;
+using ZoppaLoggingExtensions;
 
 namespace TagNotes.Models
 {
@@ -34,17 +35,17 @@ namespace TagNotes.Models
             try {
                 // 検索履歴を読み込む
                 var list = this.searchHistoryService.SearchConditionHistory;
-                this.logger.LogInformation("履歴件数:{SearchCondition}", list.Count);
+                this.logger.ZLog(this).LogInformation("履歴件数:{SearchCondition}", list.Count);
 
                 // 検索履歴を更新
                 this.SearchList.Rewrite(list.Select(v => new SearchView(v.IndexNo, v.Command)));
 
                 // 検索履歴の最新の検索条件を取得
                 this.SearchCondition = this.searchHistoryService.LatestSearchCondition.Command;
-                this.logger.LogInformation("最新検索条件:{SearchCondition}", SearchCondition);
+                this.logger.ZLog(this).LogInformation("最新検索条件:{SearchCondition}", SearchCondition);
             }
             catch (Exception ex) {
-                this.logger.LogError(ex, "検索履歴の取得に失敗しました。");
+                this.logger.ZLog(this).LogError(ex, "検索履歴の取得に失敗しました。");
             }
         }
     }
