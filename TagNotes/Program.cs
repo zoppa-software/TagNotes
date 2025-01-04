@@ -35,7 +35,7 @@ namespace TagNotes
             using var provider = CreateProvider();
             if (WindowHelper.DecideRedirection()) {
                 var logger = provider.GetService<ILoggerFactory>().CreateLogger<ListPageModel>();
-                logger.LogInformation("redirected");
+                logger.ZLog(typeof(Program)).LogInformation("redirected");
                 return;
             }
 
