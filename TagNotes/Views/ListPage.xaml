@@ -18,7 +18,12 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="view:NoteView">
                     <Grid>
-                        <TextBlock viewUtils:TextBlockInline.Inlines="{Binding Inlines}"></TextBlock>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="3"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Margin="3" viewUtils:TextBlockInline.Inlines="{Binding Inlines}"></TextBlock>
+                        <Rectangle Grid.Row="1" Fill="{StaticResource themeColor}" Height="1"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

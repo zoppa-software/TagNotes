@@ -4,6 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:TagNotes.Views">
 
-    <SolidColorBrush x:Key="tagColor" Color="#0096FF" />
-    
+    <SolidColorBrush x:Key="tagColor" Color="#006432" />
+
+    <SolidColorBrush x:Key="themeColor" Color="#eef5f9" />
+
 </ResourceDictionary>

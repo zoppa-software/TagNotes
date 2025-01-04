@@ -8,7 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="White"
+    Background="{StaticResource themeColor}"
     PrimaryButtonText="追加"
     CloseButtonText="キャンセル"
     Loaded="ContentDialog_Loaded">

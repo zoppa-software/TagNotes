@@ -46,9 +46,6 @@ namespace TagNotes.Helper
             uint dwFlags, uint dwMilliseconds, ulong nHandles,
             IntPtr[] pHandles, out uint dwIndex);
 
-
-
-
         /// <summary>デフォルトの DPI 値。</summary>
         public const double DefaultPixelsPerInch = 96D;
 
