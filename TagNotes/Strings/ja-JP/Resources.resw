@@ -186,4 +186,10 @@
   <data name="IsEveryChkText.Content" xml:space="preserve">
     <value>毎日通知する</value>
   </data>
+  <data name="SearchButtonText.Content" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="CancelButtonText.Content" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
 </root>

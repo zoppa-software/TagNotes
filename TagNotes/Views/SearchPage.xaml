@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Uid="SearchPage"
+    x:Class="TagNotes.Views.SearchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TagNotes.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{StaticResource themeColor}"
+    Loaded="Page_Loaded" >
+
+    <Grid Padding="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <TextBox Text="{Binding SearchCondition, Mode=TwoWay}"
+                     Height="60"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                <Button x:Uid="SearchButtonText" Content="search" Click="SearchButton_Click" />
+                <Button x:Uid="CancelButtonText" Content="cancel" Click="CancelButton_Click" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Grid.Row="1"
+                   Text="{Binding TagsString, Mode=TwoWay}"
+                   Height="90"
+                   TextWrapping="WrapWholeWords" />
+
+        <ListView Grid.Row="2" 
+                  ItemsSource="{Binding SearchList}" 
+                  SelectionMode="Single"
+                  SelectionChanged="ListView_SelectionChanged">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Height" Value="26" />
+                    <Setter Property="MinHeight" Value="26" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:SearchView">
+                    <Grid>
+                        <TextBlock Text="{Binding Command}" FontSize="12" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+    
+</Page>

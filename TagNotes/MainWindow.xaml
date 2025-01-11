@@ -14,6 +14,7 @@
             <RowDefinition Height="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        
         <!-- タイトル -->
         <Grid x:Name="AppTitleBar"
               Background="{StaticResource themeColor}">
@@ -27,11 +28,22 @@
                        Style="{StaticResource CaptionTextBlockStyle}" 
                        VerticalAlignment="Center"
                        Margin="5,0,0,0"/>
-                <TextBlock x:Name="SerachTextBlock"
-                       TextWrapping="NoWrap"
-                       Style="{StaticResource CaptionTextBlockStyle}" 
-                       VerticalAlignment="Center"
-                       Margin="20,0,0,0"/>
+
+                <FontIcon Margin="20,0,0,0" Glyph="&#xE721;" FontSize="14" />
+
+                <Border Margin="5,0,0,0" 
+                        Background="Transparent" 
+                        Height="24" 
+                        HorizontalAlignment="Center" 
+                        BorderThickness="0,0,0,1" 
+                        BorderBrush="DarkBlue">
+                    <TextBlock x:Name="SerachTextBlock"
+                           TextWrapping="NoWrap"  
+                           Style="{StaticResource CaptionTextBlockStyle}" 
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" 
+                           Padding="5"/>
+                </Border>
             </StackPanel>
         </Grid>
 

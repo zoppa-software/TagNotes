@@ -74,7 +74,8 @@ namespace TagNotes
 
                 // 最新の検索条件で検索し、リストページを表示
                 if (this.NavView.DataContext is MainWindowModel model) {
-                    this.ContentFrame.Navigate(typeof(ListPage), model.LatestSearchCondition ?? "");
+                    var condition = model.LatestSearchCondition ?? "";
+                    this.ContentFrame.Navigate(typeof(ListPage), (this, condition));
                 }
             }
             catch (Exception ex) {
@@ -87,19 +88,27 @@ namespace TagNotes
         private string GetSearchConditionFromHistoryPage()
         {
             var page = this.ContentFrame.BackStack.LastOrDefault(v => v.SourcePageType == typeof(ListPage));
-            return page?.Parameter?.ToString() ?? "";
+            if (page?.Parameter is (MainWindow, string)) {
+                return (((MainWindow, string))page.Parameter).Item2;
+            }
+            else {
+                return "";
+            }
         }
 
         /// <summary>リストページに変更します。</summary>
-        private void ChangeListPage()
+        private async void ChangeListPage()
         {
             if (this.ContentFrame.CurrentSourcePageType != typeof(ListPage)) {
                 // 現在のページがリストページでない場合、リストページを表示
-                this.ContentFrame.Navigate(typeof(ListPage), this.GetSearchConditionFromHistoryPage());
+                var condition = this.GetSearchConditionFromHistoryPage();
+                this.ContentFrame.Navigate(typeof(ListPage), (this, condition));
             }
             else {
                 // リストページを再読み込み
-                (this.ContentFrame.Content as ListPage)?.ReloadList(NavigationMode.New);
+                if (this.ContentFrame.Content is ListPage page) {
+                    await page.ReloadList(NavigationMode.New);
+                }    
                 this.NavView.SelectedItem = this.ListPageItem;
             }
         }
@@ -120,20 +129,7 @@ namespace TagNotes
                         break;
 
                     case "SearchPage": {
-                            // 検索ページを表示し、リストを表示
-                            if (this.NavView.DataContext is MainWindowModel model) {
-                                await model.SelectBySearchPage(
-                                    async (data) => {
-                                        var dialog = new SearchDialog {
-                                            XamlRoot = this.Content.XamlRoot,
-                                            DataContext = data
-                                        };
-                                        return await dialog.ShowAsync();
-                                    },
-                                    (data) => this.ContentFrame.Navigate(typeof(ListPage), data.SearchCondition),
-                                    () => this.ChangeListPage()
-                                );
-                            }
+                            this.ContentFrame.Navigate(typeof(SearchPage), this);
                         }
                         break;
 
@@ -164,14 +160,34 @@ namespace TagNotes
             }
         }
 
+        /// <summary>リストページに遷移します。</summary>
+        /// <param name="condition"></param>
+        public void GoListPage(string condition)
+        {
+            this.ContentFrame.Navigate(typeof(ListPage), (this, condition));
+        }
+
         /// <summary>バックボタンが押されたときに呼び出されます。</summary>
         /// <param name="sender">イベント発行元。</param>
         /// <param name="args">イベントオブジェクト。</param>
         private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
+            this.GoBackFrame();
+        }
+
+        /// <summary>フレームを戻します。</summary>
+        public void GoBackFrame()
+        {
             if (this.ContentFrame.CanGoBack) {
-                this.ContentFrame.GoBack();   
+                this.ContentFrame.GoBack();
             }
+        }
+
+        /// <summary>検索条件を設定します。</summary>
+        /// <param name="condition">検索条件。</param>
+        public void SetSearchCondition(string condition)
+        {
+            this.SerachTextBlock.Text = condition;
         }
 
         /// <summary>ナビゲーションが完了したときに呼び出されます。</summary>
@@ -192,6 +208,13 @@ namespace TagNotes
                 default:
                     this.NavView.SelectedItem = this.NavView.MenuItems.OfType<NavigationViewItem>().First(p => p.Tag.Equals(e.SourcePageType.Name));
                     break;
+            }
+
+            // リストページ以外の履歴を削除
+            for (int i = this.ContentFrame.BackStack.Count - 1; i >= 0; --i) {
+                if (this.ContentFrame.BackStack[i].SourcePageType != typeof(ListPage)) {
+                    this.ContentFrame.BackStack.RemoveAt(i);
+                }
             }
 
             // バックボタンの有効無効を設定

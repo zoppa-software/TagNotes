@@ -556,6 +556,33 @@ where
             tran.Commit();
         }
 
+        /// <summary>タグを読み込みます。</summary>
+        /// <returns>タグリスト。</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        internal List<Tag> LoadTags()
+        {
+            // 接続を開く
+            using var con = this.connection.GetDbConnection();
+            con.Open();
+
+            // 検索履歴を取得
+            return con.ExecuteRecords<Tag>(
+@"with tags as (
+    select
+        tag, count(*) as cnt
+    from
+        ShortTag
+    group by
+        tag
+)
+select
+    0, tag
+from
+    tags
+order by
+    cnt desc, tag asc");
+        }
+
         /// <summary>メモ情報。</summary>
         /// <param name="index">メモインデックス。</param>
         /// <param name="information">メモ。</param>

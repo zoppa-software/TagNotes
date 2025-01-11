@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Views\EditDialog.xaml.cs" />
+    <Compile Remove="Views\SearchDialog.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\app.ico" />
@@ -41,10 +42,12 @@
     <None Remove="Views\Resources\ColorDictionary.xaml" />
     <None Remove="Views\Resources\StyleDictionary.xaml" />
     <None Remove="Views\SearchDialog.xaml" />
+    <None Remove="Views\SearchPage.xaml" />
     <None Remove="Views\SettingPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Page Remove="Views\EditDialog.xaml" />
+    <Page Remove="Views\SearchDialog.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -100,6 +103,9 @@
       <PackagePath>\</PackagePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\SearchPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
@@ -109,11 +115,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\AddOrEditDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\SearchDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

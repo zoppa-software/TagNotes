@@ -19,6 +19,9 @@ namespace TagNotes.Views
         /// <summary>ログ出力機能。</summary>
         private readonly ILogger? logger;
 
+        /// <summary>メインウィンドウ。</summary>
+        private MainWindow? mainWin;
+
         /// <summary>表示中の検索条件。</summary>
         private string searchCondition = "";
 
@@ -40,17 +43,20 @@ namespace TagNotes.Views
         /// <summary>リストを読み込みます。</summary>
         /// <param name="navigationMode">ナビゲーションモード。</param>
         /// <returns>非同期タスク。</returns>
-        public async Task ReloadList(NavigationMode navigationMode)
+        public async Task<string> ReloadList(NavigationMode navigationMode)
         {
             try {
                 if (this.DataContext is ListPageModel model) {
                     this.logger?.ZLog(this).LogInformation("リストを再読込。条件:{searchCondition}", this.searchCondition);
                     await model.LoadList(this.searchCondition, navigationMode);
+                    this.mainWin?.SetSearchCondition(this.searchCondition);
+                    return this.searchCondition;
                 }
             }
             catch (Exception ex) {
                 this.logger?.ZLog(this).LogError(ex, "リスト再読込エラー:{ex.Message}", ex.Message);
             }
+            return "";
         }
 
         /// <summary>ページがナビゲートされたときに呼び出されます。</summary>
@@ -59,9 +65,10 @@ namespace TagNotes.Views
         {
             try {
                 if (this.DataContext is ListPageModel model) {
-                    this.searchCondition = e.Parameter?.ToString() ?? "";
+                    (this.mainWin, this.searchCondition) = ((MainWindow, string))e.Parameter;
                     this.logger?.ZLog(this).LogInformation("リストを読込。条件:{searchCondition}", this.searchCondition);
                     await model.LoadList(this.searchCondition, e.NavigationMode);
+                    this.mainWin.SetSearchCondition(this.searchCondition);
                 }
             }
             catch (Exception ex) {
