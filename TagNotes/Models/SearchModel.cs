@@ -82,7 +82,13 @@ namespace TagNotes.Models
         /// <summary>検索履歴を更新します。</summary>
         internal async Task UpdateSearchHistory()
         {
-            await this.searchHistoryService.UpdateSearchHistory(this.SearchCondition);
+            try {
+                // 検索履歴を更新
+                await this.searchHistoryService.UpdateSearchHistory(this.SearchCondition);
+            }
+            catch (Exception ex) {
+                this.logger.ZLog(this).LogError(ex, "検索履歴の更新に失敗しました。");
+            }
         }
     }
 }

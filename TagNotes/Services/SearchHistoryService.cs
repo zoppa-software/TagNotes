@@ -68,7 +68,7 @@ namespace TagNotes.Services
 
         /// <summary>検索履歴リストに追加します。</summary>
         /// <param name="searchCondition">検索ワード。</param>
-        internal async Task UpdateSearchHistory(string searchCondition)
+        public async Task UpdateSearchHistory(string searchCondition)
         {
             var hit = this.searchHistory.FirstOrDefault(x => x.Command == searchCondition);
             if (hit != null) {
